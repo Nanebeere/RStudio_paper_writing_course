@@ -100,7 +100,7 @@ data_Ashwini_sel
 # Add mean and SD columns with group_by() and mutate() --------
 
 data_Ashwini_sel_M_SD <- data_Ashwini_sel %>%
-  group_by(gene) %>%
+  group_by(gene, days) %>%
   mutate(mean2dct = mean(x2_dct)) %>%
   mutate(sd2dct = sd(x2_dct))
 data_Ashwini_sel_M_SD
@@ -160,9 +160,11 @@ iris %>%
 
 
 # Plot data - Jose ---------------
+# using factor(Treatment, ...) possible to define the order in what different treatments get displayed
+
 data_Jose
 plot_Jose1 <- data_Jose %>%
-  ggplot(aes(x = genotype, y = length, fill = factor(Treatment, level=c('Control', 'ABA', 'Sulfate')), na.rm = TRUE)) +
+  ggplot(aes(x = genotype, y = length, fill = factor(Treatment, level=c('control', 'ABA', 'Sulfate')), na.rm = TRUE)) +
   geom_boxplot() +
   theme_minimal() +
   scale_fill_manual(values = c("#D55E00", "#E69F00", "#cccccc")) +
@@ -173,7 +175,7 @@ plot_Jose1 <- data_Jose %>%
 plot_Jose1  
 
 plot_Jose2 <- data_Jose %>%
-  ggplot(aes(x = genotype, y = length, fill = factor(Treatment, level=c('Control', 'ABA', 'Sulfate')), na.rm = TRUE)) +
+  ggplot(aes(x = genotype, y = length, fill = Treatment, na.rm = TRUE)) +
   geom_violin() +
   geom_point( position=position_jitterdodge(jitter.width = 0.3, dodge.width = 0.9), alpha = 0.5, size = 0.4) +
   scale_fill_manual(values = c("#D55E00", "#E69F00", "#aaaaaa", "#dddddd")) +
@@ -255,7 +257,7 @@ theme_plots <- theme_minimal() +
     legend.text = element_text(size = 10),
     legend.title = element_text(size = 12),
     legend.key.size = unit(7, "mm"),
-    legend.title.position = "top",
+    legend.position = "top",
     legend.background = element_rect(color = "grey"),
     plot.title.position = "panel"
   )
@@ -298,6 +300,8 @@ ggsave(
 
 # Assemble figure with cowplot and patchwork --------------
 
+### can use control+shift+r to add section label
+
 #read images
 
 img1 <- readPNG("analysis/pictures/plot_Jose1a.png")
@@ -308,15 +312,24 @@ panel_JoseA <- ggdraw() + draw_image(img1)
 panel_JoseB <- ggdraw() + draw_image(img2)
 
 #define layout with textual representation
+### can define al sorts of layouts but they need to be rectangular
+
 layout <- "
 AB
 CD"
 
 #assemble multipanel figure based on layout
-Figure_Jose <- panel_JoseA + panel_JoseB + plot_Jose1 + plot_Jose2 +
+Figure_Jose1 <- panel_JoseA + panel_JoseB + plot_Jose1 + plot_Jose2 +
   plot_layout(design = layout, heights = c(1, 1)) +
   plot_annotation(tag_levels = 'A') & 
   theme(plot.tag = element_text(size = 12, face='plain'))
+
+#assemble multipanel figure based on layout with R objects (not saved images)
+Figure_Jose <- plot_Jose1 + plot_Jose2 + plot_Ashwini_ct + plot_syn +
+  plot_layout(design = layout, heights = c(1, 1)) +
+  plot_annotation(tag_levels = 'A') & 
+  theme(plot.tag = element_text(size = 12, face='plain'))
+Figure_Jose
 
 #save figure as png and pdf
 ggsave(
@@ -394,7 +407,7 @@ image_read("manuscript/figures/Figure_IHC.png")
 
 #read images and make annotated panel
 panel_NOS2d_HCR <- ggdraw() + draw_image(readPNG("analysis/pictures/HCR-IHC_51_AP_NOS_actub_56um.png")) +
-  draw_label("in situ HCR", x = 0.3, y = 0.99, size = 10) +
+  draw_label("in situ HCR", x = 0.5, y = 0.99, size = 10) +
   draw_label("NOS", x = 0.12, y = 0.9, color="magenta", size = 11, fontface="italic") +
   draw_label("acTub", x = 0.36, y = 0.9, color="green", size = 11, fontface="plain") +
   draw_line(x = c(0.1, 0.46), y = c(0.08, 0.08), color = "white", size = 0.5) +
