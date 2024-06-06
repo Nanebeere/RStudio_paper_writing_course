@@ -17,6 +17,8 @@ Title <- "Title of your paper goes here"
 
 # An R project template to write scientific manuscripts reproducibly by integrating data, code, text and citations
 
+now a change in the README file
+
 About the project: 
 - this is a template repository with an R project that the [Jékely lab](https://www.cos.uni-heidelberg.de/en/research-groups/gaspar-jekely) uses to start to write new research papers.
 
